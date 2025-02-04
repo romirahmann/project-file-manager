@@ -1,8 +1,13 @@
+/* eslint-disable no-unused-vars */
+import axios from "axios";
 import { Card, Button } from "flowbite-react";
 import { useState, useEffect, useRef } from "react";
 function HeaderContent() {
   const [togleUpload, setTogleUpload] = useState(false);
   const dropdownRef = useRef(null);
+  const [loading, setLoading] = useState(true);
+  const [dataLenght, setDataLenght] = useState();
+  const [currentDateTime, setCurrentDateTime] = useState("");
 
   // Menutup dropdown jika klik di luar komponen
   useEffect(() => {
@@ -12,9 +17,34 @@ function HeaderContent() {
       }
     };
 
+    axios
+      .get("http://192.168.9.192:3000/api/master/count-files") // Ganti dengan API-mu
+      .then((response) => {
+        let apiData = response.data.data;
+        setDataLenght(apiData);
+        setLoading(false);
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+
+    const updateDateTime = () => {
+      const now = new Date();
+      const day = now.toLocaleString("id-ID", { weekday: "long" });
+      const date = now.toLocaleDateString("id-ID");
+      const time = now.toLocaleTimeString("id-ID");
+
+      setCurrentDateTime(`${day}, ${date} ${time}`);
+    };
+
+    // Update time every second
+    const interval = setInterval(updateDateTime, 1000);
+
+    // Set initial time
+    updateDateTime();
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      clearInterval(interval);
     };
   }, []);
 
@@ -25,8 +55,7 @@ function HeaderContent() {
       <Card className="">
         <div className="flex place-items-center">
           <img src="/icon/folder.png" className="w-10" alt="" />
-          <div className="title-head font-bold text-2xl ms-2">PADAPRIMA</div>
-
+          <div className="title-head font-bold text-4xl ms-2">PADAPRIMA</div>
           <div className="flex content-center button ms-auto">
             <div className="relative">
               <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
@@ -107,6 +136,9 @@ function HeaderContent() {
             </div>
           </div>
         </div>
+        <p className="text-gray-400">
+          {currentDateTime} | Total: {dataLenght} file
+        </p>
       </Card>
     </>
   );

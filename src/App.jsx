@@ -1,8 +1,17 @@
 /* eslint-disable no-unused-vars */
+import { useState } from "react";
 import HeaderContent from "./components/HeaderContent";
 import MainTable from "./components/MainTable";
 
 function App() {
+  const [mainData, setMainData] = useState([]);
+
+  const handleData = (data) => {
+    setMainData(data);
+  };
+
+  console.log(mainData);
+
   return (
     <>
       <div className="container-fluid">
@@ -11,7 +20,7 @@ function App() {
             <HeaderContent />
           </div>
           <div className="card mt-2 border-black border-5">
-            <MainTable />
+            <MainTable dataDocument={handleData} />
           </div>
         </div>
       </div>
