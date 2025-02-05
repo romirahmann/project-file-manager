@@ -1,9 +1,12 @@
 /* eslint-disable no-unused-vars */
 import axios from "axios";
-import { Card, Button } from "flowbite-react";
+import { Card, Button, Spinner } from "flowbite-react";
 import { useState, useEffect, useRef } from "react";
+import { ModalUpload } from "./ModalUpload";
 function HeaderContent() {
   const [togleUpload, setTogleUpload] = useState(false);
+  const [typeUpload, setTypeUpload] = useState("file");
+  const [uploadModal, setUploadModal] = useState(false);
   const dropdownRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [dataLenght, setDataLenght] = useState();
@@ -49,13 +52,31 @@ function HeaderContent() {
   }, []);
 
   const toggleDropdownUpload = () => setTogleUpload(!togleUpload);
+  if (loading)
+    return (
+      <>
+        <div className="spinner  h-screen grid content-center justify-center">
+          <Spinner size="xl" aria-label="Default status example" />
+        </div>
+      </>
+    );
+
+  const openModalUpload = (type) => {
+    setTypeUpload(type);
+    setUploadModal(true);
+    setTogleUpload(false);
+  };
+
+  const handleCloseModal = () => {
+    setUploadModal(false);
+  };
 
   return (
     <>
       <Card className="">
         <div className="flex place-items-center">
           <img src="/icon/folder.png" className="w-10" alt="" />
-          <div className="title-head font-bold text-4xl ms-2">PADAPRIMA</div>
+          <div className="title-head font-bold text-4xl ms-2">FILE MANAGER</div>
           <div className="flex content-center button ms-auto">
             <div className="relative">
               <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
@@ -84,14 +105,17 @@ function HeaderContent() {
             </div>
 
             <div className=" ms-2 btn-upload relative" ref={dropdownRef}>
-              <Button onClick={toggleDropdownUpload} color="blue">
+              <button
+                onClick={toggleDropdownUpload}
+                className="flex bg-blue-500 hover:bg-blue-600 text-white border-none focus:outline-none px-6 py-3 rounded-xl"
+              >
                 <img
                   src="/icon/upload.svg"
                   className="mr-2 h-5 w-5 text-white"
                   alt=""
                 />
                 Upload
-              </Button>
+              </button>
               {togleUpload && (
                 <div
                   id="item-uplod"
@@ -102,11 +126,10 @@ function HeaderContent() {
                   tabIndex="-1"
                 >
                   <div className="py-1" role="none">
-                    <a
-                      href="#"
+                    <button
+                      onClick={() => openModalUpload("File")}
                       className="flex px-4 py-2 text-sm text-gray-700 "
                       role="menuitem"
-                      tabIndex="-1"
                       id="menu-item-0"
                     >
                       <img
@@ -115,12 +138,11 @@ function HeaderContent() {
                         alt=""
                       />
                       Upload File
-                    </a>
-                    <a
-                      href="#"
+                    </button>
+                    <button
+                      onClick={() => openModalUpload("Folder")}
                       className="flex px-4 py-2 text-sm text-gray-700"
                       role="menuitem"
-                      tabIndex="-1"
                       id="menu-item-1"
                     >
                       <img
@@ -129,7 +151,7 @@ function HeaderContent() {
                         alt=""
                       />
                       Upload Folder
-                    </a>
+                    </button>
                   </div>
                 </div>
               )}
@@ -140,6 +162,13 @@ function HeaderContent() {
           {currentDateTime} | Total: {dataLenght} file
         </p>
       </Card>
+
+      {/* MODAL UPLOAD */}
+      <ModalUpload
+        isOpen={uploadModal}
+        typeUpload={typeUpload}
+        onClose={handleCloseModal}
+      />
     </>
   );
 }
