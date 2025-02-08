@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 "use client";
 import { useState, useEffect } from "react";
@@ -16,15 +17,14 @@ import {
 import { FaFolder, FaFilePdf } from "react-icons/fa";
 import { HiHome } from "react-icons/hi";
 
-// eslint-disable-next-line react/prop-types
-function MainTable() {
+function MainTable({ onPathChange, searchQuery = "" }) {
   const [data, setData] = useState({});
   const [currentPath, setCurrentPath] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     axios
-      .get("http://192.168.9.192:3000/api/master/file-manager") // Ganti dengan API-mu
+      .get("http://192.168.9.192:3000/api/master/file-manager") // API endpoint
       .then((response) => {
         let apiData = response.data.data;
         setData(apiData);
@@ -32,6 +32,10 @@ function MainTable() {
       })
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
+
+  useEffect(() => {
+    onPathChange(currentPath.join("/"));
+  }, [currentPath, onPathChange]);
 
   const navigateToFolder = (folderName) => {
     setCurrentPath((prev) => [...prev, folderName]);
@@ -47,17 +51,17 @@ function MainTable() {
 
   const getFilePDF = async (filePath) => {
     try {
-      await axios
-        .post("http://192.168.9.192:3000/api/master/file-url/", {
+      const response = await axios.post(
+        "http://192.168.9.192:3000/api/master/file-url/",
+        {
           filePath: filePath,
-        })
-        .then((response) => {
-          const result = response.data.data;
+        }
+      );
 
-          if (result) {
-            window.open(result, "_blank"); // Membuka URL yang baru
-          }
-        });
+      const result = response.data.data;
+      if (result) {
+        window.open(result, "_blank");
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -65,12 +69,25 @@ function MainTable() {
 
   const handleFileClick = (fileName) => {
     const fullPath = [...currentPath, fileName].join("/");
+    onPathChange(fullPath);
     getFilePDF(fullPath);
   };
 
   if (loading) return <p>Loading...</p>;
 
   const currentData = getCurrentData();
+
+  // Pastikan searchQuery tidak null/undefined, dan filter data
+  const searchQueryLower = searchQuery.toLowerCase();
+  const filteredData = Object.entries(currentData).filter(([key, value]) => {
+    const isFolder = typeof value === "object" && value !== null;
+    const valueString = isFolder ? "" : String(value).toLowerCase(); // Jika bukan folder, gunakan string value
+
+    return (
+      key.toLowerCase().includes(searchQueryLower) || // Mencari di nama folder
+      valueString.includes(searchQueryLower) // Mencari di nama file
+    );
+  });
 
   return (
     <>
@@ -113,14 +130,9 @@ function MainTable() {
               </TableHeadCell>
             </TableHead>
             <TableBody className="divide-y">
-              {Object.keys(currentData).map((key) => {
-                const value = currentData[key];
-                const isFolder =
-                  (typeof value === "object" && value !== null) ||
-                  Array.isArray(value);
-
-                const lastModified =
-                  value.lastModified || new Date().toLocaleString(); // Contoh tanggal
+              {filteredData.map(([key, value]) => {
+                const isFolder = typeof value === "object" && value !== null;
+                const lastModified = new Date().toLocaleString();
 
                 return (
                   <TableRow key={key} className="bg-gray-100">
