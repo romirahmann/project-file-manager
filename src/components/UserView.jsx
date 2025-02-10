@@ -232,6 +232,12 @@ export function UserView() {
         setStatus("Upload File Successfully!");
       });
   };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userData");
+    window.location.reload();
+  };
   return (
     <>
       <div className="container-fluid p-5">
@@ -260,9 +266,17 @@ export function UserView() {
             </Select>
             <button
               onClick={() => handleModal()}
-              className="bg-blue-700 mx-1 me-10 hover:bg-blue-600 text-white px-2 py-2 rounded-lg"
+              className="bg-blue-700 mx-1 me-10 hover:bg-blue-600 text-white px-2 py-2 rounded-lg flex"
             >
+              <img src="/icon/upload.svg" className="w-5 mx-2" alt="" />
               Upload File
+            </button>
+            <button
+              onClick={() => handleLogout()}
+              className="bg-red-700 mx-1 me-10 hover:bg-red-600 text-white px-2 py-2 rounded-lg flex"
+            >
+              <img src="/icon/logout.svg" className="w-5 mx-2" alt="" />
+              LOGOUT
             </button>
           </div>
           <div className="documentName flex">
