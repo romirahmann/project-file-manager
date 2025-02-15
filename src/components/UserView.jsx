@@ -18,6 +18,7 @@ import {
 import { useEffect, useState } from "react";
 import moment from "moment";
 import "moment/locale/id";
+import { ModalDelete } from "./modal/ModalDelete";
 
 export function UserView() {
   const [currentDateTime, setCurrentDateTime] = useState("");
@@ -30,7 +31,7 @@ export function UserView() {
   const [selectedFile, setSelectedFile] = useState();
   const [status, setStatus] = useState("");
   const [isOpen, setModalOpen] = useState(false);
-  const [openModalDelete, setModalDelete] = useState(false);
+  const [openModalDelete, setOpenModalDelete] = useState(false);
   const [formValues, setFormValues] = useState({
     document_id: 1,
     nobox: "",
@@ -46,6 +47,7 @@ export function UserView() {
     file: null,
   });
   const [inputDocument, setInputDocument] = useState("ACOUNT PAYABLE");
+  const [idDocument, setIdDocument] = useState();
 
   // State untuk pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -213,11 +215,6 @@ export function UserView() {
     isOpen ? setModalOpen(false) : setModalOpen(true);
   };
 
-  const handleModalDelete = (filePath, metaId, documentName) => {
-    handleDeletePDF(filePath, metaId, documentName);
-    openModalDelete ? setModalDelete(false) : setModalDelete(true);
-  };
-
   const handleInput = (e) => {
     const { name, value } = e.target;
     setFormValues({
@@ -269,6 +266,15 @@ export function UserView() {
     localStorage.removeItem("token");
     localStorage.removeItem("userData");
     window.location.reload();
+  };
+
+  const handleModalDelete = (data) => {
+    setIdDocument(data);
+    setOpenModalDelete(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModalDelete(false);
   };
   return (
     <>
@@ -427,13 +433,7 @@ export function UserView() {
                             <button
                               data-tooltip-target="infoView"
                               className="bg-red-500 mx-1 hover:bg-red-600 text-white px-2 py-2 rounded-lg"
-                              onClick={() =>
-                                handleDeletePDF(
-                                  value.filePath,
-                                  value.id,
-                                  value.documentName
-                                )
-                              }
+                              onClick={() => handleModalDelete(value)}
                             >
                               <img
                                 src="/icon/delete.svg"
@@ -849,12 +849,13 @@ export function UserView() {
         </Modal.Body>
         <Modal.Footer></Modal.Footer>
       </Modal>
-      {/* MODAL CONFIRM */}
-      <Modal show={openModalDelete} onClose={handleModalDelete}>
-        <Modal.Header />
-        <Modal.Body></Modal.Body>
-        <Modal.Footer />
-      </Modal>
+
+      <ModalDelete
+        className="md:w-full"
+        data={idDocument}
+        openModalDelete={openModalDelete}
+        onClose={handleCloseModal}
+      />
     </>
   );
 }

@@ -22,14 +22,6 @@ createRoot(document.getElementById("root")).render(
           }
         />
         <Route path="/login" element={<Login />} />
-        {/* <Route
-          path="/admin"
-          element={
-            <ProtectedRoute>
-              <App />
-            </ProtectedRoute>
-          }
-        /> */}
         <Route path="/*" element={<NotFound />} />
       </Routes>
     </Router>
