@@ -30,6 +30,7 @@ export function UserView() {
   const [selectedFile, setSelectedFile] = useState();
   const [status, setStatus] = useState("");
   const [isOpen, setModalOpen] = useState(false);
+  const [openModalDelete, setModalDelete] = useState(false);
   const [formValues, setFormValues] = useState({
     document_id: 1,
     nobox: "",
@@ -52,7 +53,7 @@ export function UserView() {
   useEffect(() => {
     setTime();
     getAllDocumentName();
-  }, [documentName]);
+  }, [documentName, metaData]);
 
   const getAllPayabale = () => {
     axios
@@ -147,12 +148,38 @@ export function UserView() {
   };
 
   const handleViewPDF = (filePath) => {
-    console.log(filePath);
+    // console.log(filePath);
     if (!filePath) {
       alert("File tidak ditemukan");
     }
     getFilePDF(filePath);
   };
+  const handleDeletePDF = (filePath, metaId, documentName) => {
+    if (!filePath && !metaId && !documentName) {
+      alert("Data tidak ditemukan");
+    }
+    let data = {
+      filePath: filePath,
+      dataId: metaId,
+      accountName: documentName,
+    };
+
+    deletePDF(data);
+  };
+  const deletePDF = async (data) => {
+    try {
+      const res = await axios.delete(
+        "http://192.168.9.192:3000/api/master/delete-file",
+        {
+          data,
+        }
+      );
+      console.log(res.status);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   const getFilePDF = async (filePath) => {
     try {
       const response = await axios.post(
@@ -184,6 +211,11 @@ export function UserView() {
 
   const handleModal = () => {
     isOpen ? setModalOpen(false) : setModalOpen(true);
+  };
+
+  const handleModalDelete = (filePath, metaId, documentName) => {
+    handleDeletePDF(filePath, metaId, documentName);
+    openModalDelete ? setModalDelete(false) : setModalDelete(true);
   };
 
   const handleInput = (e) => {
@@ -269,14 +301,14 @@ export function UserView() {
               className="bg-blue-700 mx-1 me-10 hover:bg-blue-600 text-white px-2 py-2 rounded-lg flex"
             >
               <img src="/icon/upload.svg" className="w-5 mx-2" alt="" />
-              Upload File
+              <span className="me-3">Upload File</span>
             </button>
             <button
               onClick={() => handleLogout()}
               className="bg-red-700 mx-1 me-10 hover:bg-red-600 text-white px-2 py-2 rounded-lg flex"
             >
               <img src="/icon/logout.svg" className="w-5 mx-2" alt="" />
-              LOGOUT
+              <span className="me-2">LOGOUT</span>
             </button>
           </div>
           <div className="documentName flex">
@@ -392,17 +424,23 @@ export function UserView() {
                                 />
                               </svg>
                             </button>
-                            <div
-                              id="infoView"
-                              role="tooltip"
-                              className="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700"
+                            <button
+                              data-tooltip-target="infoView"
+                              className="bg-red-500 mx-1 hover:bg-red-600 text-white px-2 py-2 rounded-lg"
+                              onClick={() =>
+                                handleDeletePDF(
+                                  value.filePath,
+                                  value.id,
+                                  value.documentName
+                                )
+                              }
                             >
-                              View Document
-                              <div
-                                className="tooltip-arrow"
-                                data-popper-arrow
-                              ></div>
-                            </div>
+                              <img
+                                src="/icon/delete.svg"
+                                className="w-6"
+                                alt=""
+                              />
+                            </button>
                           </TableCell>
                         </TableRow>
                       ))
@@ -538,7 +576,7 @@ export function UserView() {
                           <TableCell>
                             <button
                               data-tooltip-target="infoView"
-                              className="bg-blue-500 mx-1 hover:bg-blue-600 text-white px-2 py-2 rounded-lg"
+                              className="mt-2 md:mt-2 bg-blue-500 mx-1 hover:bg-blue-600 text-white px-2 py-2 rounded-lg"
                               onClick={() => handleViewPDF(value.filePath)}
                             >
                               <svg
@@ -557,17 +595,19 @@ export function UserView() {
                                 />
                               </svg>
                             </button>
-                            <div
-                              id="infoView"
-                              role="tooltip"
-                              className="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700"
+                            <button
+                              data-tooltip-target="infoView"
+                              className="mt-2 md:mt-2 bg-red-500 mx-1 hover:bg-red-600 text-white px-2 py-2 rounded-lg"
+                              onClick={() =>
+                                handleDeletePDF(value.filePath, value.id)
+                              }
                             >
-                              View Document
-                              <div
-                                className="tooltip-arrow"
-                                data-popper-arrow
-                              ></div>
-                            </div>
+                              <img
+                                src="/icon/delete.svg"
+                                className="w-6"
+                                alt=""
+                              />
+                            </button>
                           </TableCell>
                         </TableRow>
                       ))
@@ -808,6 +848,12 @@ export function UserView() {
           </form>
         </Modal.Body>
         <Modal.Footer></Modal.Footer>
+      </Modal>
+      {/* MODAL CONFIRM */}
+      <Modal show={openModalDelete} onClose={handleModalDelete}>
+        <Modal.Header />
+        <Modal.Body></Modal.Body>
+        <Modal.Footer />
       </Modal>
     </>
   );
