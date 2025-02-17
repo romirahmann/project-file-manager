@@ -19,6 +19,7 @@ import { useEffect, useState } from "react";
 import moment from "moment";
 import "moment/locale/id";
 import { ModalDelete } from "./modal/ModalDelete";
+import { ModalEdit } from "./modal/ModalEdit";
 
 export function UserView() {
   const [currentDateTime, setCurrentDateTime] = useState("");
@@ -32,6 +33,7 @@ export function UserView() {
   const [status, setStatus] = useState("");
   const [isOpen, setModalOpen] = useState(false);
   const [openModalDelete, setOpenModalDelete] = useState(false);
+  const [openModalEdit, setOpenModalEdit] = useState(false);
   const [formValues, setFormValues] = useState({
     document_id: 1,
     nobox: "",
@@ -48,6 +50,7 @@ export function UserView() {
   });
   const [inputDocument, setInputDocument] = useState("ACOUNT PAYABLE");
   const [idDocument, setIdDocument] = useState();
+  const [dataModal, setDataModal] = useState();
 
   // State untuk pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -272,9 +275,14 @@ export function UserView() {
     setIdDocument(data);
     setOpenModalDelete(true);
   };
+  const handleModalEdit = (data) => {
+    setOpenModalEdit(true);
+    setDataModal(data);
+  };
 
   const handleCloseModal = () => {
     setOpenModalDelete(false);
+    setOpenModalEdit(false);
   };
   return (
     <>
@@ -299,7 +307,9 @@ export function UserView() {
                   </option>
                 ))
               ) : (
-                <option>No Document Names Available</option>
+                <option key={document.document_id}>
+                  No Document Names Available
+                </option>
               )}
             </Select>
             <button
@@ -410,7 +420,6 @@ export function UserView() {
 
                           <TableCell>
                             <button
-                              data-tooltip-target="infoView"
                               className="bg-blue-500 mx-1 hover:bg-blue-600 text-white px-2 py-2 rounded-lg"
                               onClick={() => handleViewPDF(value.filePath)}
                             >
@@ -431,7 +440,16 @@ export function UserView() {
                               </svg>
                             </button>
                             <button
-                              data-tooltip-target="infoView"
+                              className="bg-green-500 mx-1 hover:bg-green-600 text-white px-2 py-2 rounded-lg"
+                              onClick={() => handleModalEdit(value)}
+                            >
+                              <img
+                                src="/icon/edit.svg"
+                                className="w-6"
+                                alt=""
+                              />
+                            </button>
+                            <button
                               className="bg-red-500 mx-1 hover:bg-red-600 text-white px-2 py-2 rounded-lg"
                               onClick={() => handleModalDelete(value)}
                             >
@@ -575,8 +593,7 @@ export function UserView() {
 
                           <TableCell>
                             <button
-                              data-tooltip-target="infoView"
-                              className="mt-2 md:mt-2 bg-blue-500 mx-1 hover:bg-blue-600 text-white px-2 py-2 rounded-lg"
+                              className="mt-2 md:mt-2 bg-blue-500 me-1 hover:bg-blue-600 text-white px-2 py-2 rounded-lg"
                               onClick={() => handleViewPDF(value.filePath)}
                             >
                               <svg
@@ -596,8 +613,17 @@ export function UserView() {
                               </svg>
                             </button>
                             <button
-                              data-tooltip-target="infoView"
-                              className="mt-2 md:mt-2 bg-red-500 mx-1 hover:bg-red-600 text-white px-2 py-2 rounded-lg"
+                              className="bg-green-500  hover:bg-green-600 text-white px-2 py-2 rounded-lg"
+                              onClick={() => handleModalEdit(value)}
+                            >
+                              <img
+                                src="/icon/edit.svg"
+                                className="w-6"
+                                alt=""
+                              />
+                            </button>
+                            <button
+                              className="mt-2 md:mt-2 bg-red-500  hover:bg-red-600 text-white px-2 py-2 rounded-lg"
                               onClick={() =>
                                 handleDeletePDF(value.filePath, value.id)
                               }
@@ -685,7 +711,7 @@ export function UserView() {
                       </option>
                     ))
                   ) : (
-                    <option>No Document </option>
+                    <option key={document.document_id}>No Document </option>
                   )}
                 </Select>
                 <div className="my-5">
@@ -854,6 +880,12 @@ export function UserView() {
         className="md:w-full"
         data={idDocument}
         openModalDelete={openModalDelete}
+        onClose={handleCloseModal}
+      />
+      <ModalEdit
+        className="md:w-full"
+        data={dataModal}
+        openModalEdit={openModalEdit}
         onClose={handleCloseModal}
       />
     </>

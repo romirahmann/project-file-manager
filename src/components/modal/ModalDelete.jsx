@@ -39,7 +39,7 @@ export function ModalDelete({ openModalDelete = false, data, onClose }) {
             <div className="md:my-8 text-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="w-14 fill-red-500 inline"
+                className="w-[10em] fill-red-500 inline"
                 viewBox="0 0 24 24"
               >
                 <path
@@ -55,8 +55,8 @@ export function ModalDelete({ openModalDelete = false, data, onClose }) {
                 Are you sure you want to delete it?
               </h4>
               <p className="text-sm text-gray-600 mt-4">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                auctor auctor arcu, at fermentum dui. Maecenas
+                Document ini akan terhapus secara permanent dari sistem. Apakh
+                anda akan tetap menghapusnya ?
               </p>
             </div>
           </Modal.Body>
