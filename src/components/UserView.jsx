@@ -276,6 +276,7 @@ export function UserView() {
     setOpenModalDelete(true);
   };
   const handleModalEdit = (data) => {
+    console.log(data);
     setOpenModalEdit(true);
     setDataModal(data);
   };
