@@ -4,7 +4,7 @@ import axios from "axios";
 import { Modal } from "flowbite-react";
 import { useEffect, useState } from "react";
 
-export function ModalEdit({ openModalEdit = false, data, onClose }) {
+export function ModalEdit({ openModalEdit = false, data, onClose, alertOpen }) {
   const [formEdit, setFormEdit] = useState({
     nobox: "",
     namaBank: "",
@@ -21,7 +21,6 @@ export function ModalEdit({ openModalEdit = false, data, onClose }) {
 
   useEffect(() => {
     if (data) {
-      console.log("data.transaksiDate: ", data.transaksiDate);
       setFormEdit({
         documentName: data.documentName || "",
         nobox: data.nobox || "",
@@ -38,7 +37,14 @@ export function ModalEdit({ openModalEdit = false, data, onClose }) {
         nilai: data.nilai || "",
         filename: data.filename || "",
         noReceipt: data.noReceipt || "",
-        receiptDate: data.receiptDate || "",
+        receiptDate:
+          data.receiptDate && data.receiptDate.length === 8
+            ? `${data.receiptDate.slice(0, 4)}-${data.receiptDate
+                .slice(4, 6)
+                .padStart(2, "0")}-${data.receiptDate
+                .slice(6, 8)
+                .padStart(2, "0")}`
+            : "",
         customer: data.customer || "",
         nominal: data.nominal || "",
         file: null,
@@ -78,22 +84,41 @@ export function ModalEdit({ openModalEdit = false, data, onClose }) {
           data
         )
         .then((res) => {
-          console.log("UPDATE DATA SUCCESSFULLY", res);
+          console.log("UPDATE DATA PAYABLE SUCCESSFULLY", res);
           onClose();
+          alertOpen(true, "UPDATE DATA PAYABLE");
         })
         .catch((e) => {
           console.log("UPDATE FAILED ", e);
         });
     } else {
+      // Konversi transaksiDate ke format YYYYMMDD
+      const formattedReceiptDate = formEdit.receiptDate
+        ? formEdit.receiptDate.replace(/-/g, "") // Menghilangkan tanda minus
+        : "";
+
       let data = {
         nobox: formEdit.nobox,
         filename: formEdit.filename,
         noReceipt: formEdit.noReceipt,
-        receiptDate: formEdit.receiptDate,
+        receiptDate: formattedReceiptDate,
         customer: formEdit.customer,
         nominal: formEdit.nominal,
       };
-      console.log(data);
+      axios
+        .put(
+          `http://192.168.9.192:3000/api/master/file-update/${idTarget}/document/${formEdit.documentName}`,
+          data
+        )
+        .then((res) => {
+          console.log("UPDATE DATA SUCCESSFULLY", res);
+
+          onClose();
+          alertOpen(true, "UPDATE DATA RECEIVABLE");
+        })
+        .catch((e) => {
+          console.log("UPDATE FAILED ", e);
+        });
     }
   };
 
@@ -182,6 +207,74 @@ export function ModalEdit({ openModalEdit = false, data, onClose }) {
                     type="date"
                     id="transaksiDate"
                     value={formEdit.transaksiDate}
+                    onChange={handleInputChange}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    required
+                  />
+                </div>
+              </>
+            )}
+            {formEdit.documentName === "ACOUNT RECEIVABLE" && (
+              <>
+                <div className="mb-5">
+                  <label
+                    htmlFor="noReceipt"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    No Receipt
+                  </label>
+                  <input
+                    type="text"
+                    id="noReceipt"
+                    value={formEdit.noReceipt}
+                    onChange={handleInputChange}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    required
+                  />
+                </div>
+                <div className="mb-5">
+                  <label
+                    htmlFor="customer"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Customer
+                  </label>
+                  <input
+                    type="text"
+                    id="customer"
+                    value={formEdit.customer}
+                    onChange={handleInputChange}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    required
+                  />
+                </div>
+                <div className="mb-5">
+                  <label
+                    htmlFor="nominal"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Nominal
+                  </label>
+                  <input
+                    type="text"
+                    id="nominal"
+                    value={formEdit.nominal}
+                    onChange={handleInputChange}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    required
+                  />
+                </div>
+                <div className="mb-5">
+                  <label
+                    htmlFor="receiptDate"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Receipt Date
+                  </label>
+                  <input
+                    type="date"
+                    id="receiptDate"
+                    value={formEdit.receiptDate}
                     onChange={handleInputChange}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     required
