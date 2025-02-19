@@ -20,6 +20,7 @@ import moment from "moment";
 import "moment/locale/id";
 import { ModalDelete } from "./modal/ModalDelete";
 import { ModalEdit } from "./modal/ModalEdit";
+import { ModalUploadFolder } from "./modal/ModalUploadFolder";
 
 export function UserView() {
   const [currentDateTime, setCurrentDateTime] = useState("");
@@ -35,6 +36,7 @@ export function UserView() {
     isOpen: false,
     message: "",
   });
+  const [modalUpload, setModalUpload] = useState(false);
   const [isOpen, setModalOpen] = useState(false);
   const [openModalDelete, setOpenModalDelete] = useState(false);
   const [openModalEdit, setOpenModalEdit] = useState(false);
@@ -297,6 +299,9 @@ export function UserView() {
       setIsAlertOpen(false);
     }, 3000);
   };
+  const handleModalFolder = () => {
+    modalUpload ? setModalUpload(false) : setModalUpload(true);
+  };
   return (
     <>
       <div className="container-fluid p-5">
@@ -325,7 +330,7 @@ export function UserView() {
           )}
         </div>
         <Card>
-          <div className="flex items-center">
+          <div className="flex md:flex-row flex-col items-center">
             <img src="/icon/folder.png" className="w-10" alt="" />
             <div className="font-bold text-4xl ms-2">DOCUMENTS DATA</div>
             <Select
@@ -351,10 +356,17 @@ export function UserView() {
             </Select>
             <button
               onClick={() => handleModal()}
-              className="bg-blue-700 mx-1 me-10 hover:bg-blue-600 text-white px-2 py-2 rounded-lg flex"
+              className="bg-blue-700 mx-1 hover:bg-blue-600 text-white px-2 py-2 rounded-lg flex"
             >
               <img src="/icon/upload.svg" className="w-5 mx-2" alt="" />
               <span className="me-3">Upload File</span>
+            </button>
+            <button
+              onClick={() => handleModalFolder()}
+              className="bg-blue-700 mx-1 me-10 hover:bg-blue-600 text-white px-2 py-2 rounded-lg flex"
+            >
+              <img src="/icon/uploadFolder.svg" className="w-5 mx-2" alt="" />
+              <span className="me-3">Upload Folder</span>
             </button>
             <button
               onClick={() => handleLogout()}
@@ -718,7 +730,10 @@ export function UserView() {
           </div>
         )}
       </div>
-
+      <ModalUploadFolder
+        openModalUploadFolder={modalUpload}
+        onClose={handleModalFolder}
+      />
       {/* MODAL */}
       <Modal show={isOpen} onClose={handleModal}>
         <Modal.Header>

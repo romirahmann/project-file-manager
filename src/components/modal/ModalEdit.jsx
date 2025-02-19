@@ -150,6 +150,22 @@ export function ModalEdit({ openModalEdit = false, data, onClose, alertOpen }) {
               <>
                 <div className="mb-5">
                   <label
+                    htmlFor="filename"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    File Name
+                  </label>
+                  <input
+                    type="text"
+                    id="filename"
+                    value={formEdit.filename}
+                    onChange={handleInputChange}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    required
+                  />
+                </div>
+                <div className="mb-5">
+                  <label
                     htmlFor="namaBank"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
@@ -216,6 +232,20 @@ export function ModalEdit({ openModalEdit = false, data, onClose, alertOpen }) {
             )}
             {formEdit.documentName === "ACOUNT RECEIVABLE" && (
               <>
+                <label
+                  htmlFor="filename"
+                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
+                  File Name
+                </label>
+                <input
+                  type="text"
+                  id="filename"
+                  value={formEdit.filename}
+                  onChange={handleInputChange}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  required
+                />
                 <div className="mb-5">
                   <label
                     htmlFor="noReceipt"
@@ -290,7 +320,7 @@ export function ModalEdit({ openModalEdit = false, data, onClose, alertOpen }) {
             type="button"
             className="ms-auto px-4 py-2 rounded-lg text-white text-sm tracking-wide bg-blue-500 hover:bg-blue-600 active:bg-blue-500"
           >
-            Edit
+            Save
           </button>
         </Modal.Footer>
       </Modal>
