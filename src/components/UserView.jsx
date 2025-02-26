@@ -523,7 +523,7 @@ export function UserView() {
               </div>
 
               {/* Pagination */}
-              <div className="footer flex">
+              <div className="footer flex mt-2">
                 <div className="detail">
                   <p className="text-gray-600">
                     Showing{" "}
